@@ -1,4 +1,4 @@
-var _size = 1080; //2000;
+var _size = 2000; //2000;
 
 function buildCity() {
     // build the base geometry for each building
@@ -27,7 +27,7 @@ function buildCity() {
 
     // base colors for vertexColors. light is for vertices at the top, shaddow is for the ones at the bottom
     var light  = new THREE.Color(0xffffff);
-    var shadow = new THREE.Color(0x303050);
+    var shadow = new THREE.Color(0x000000);
 
     var cityGeometry = new THREE.Geometry();
     for (var i = (_size*_size/200); i--; ) {
@@ -106,8 +106,8 @@ function buildCity() {
         // build a bigger canvas and copy the small one in it
         // This is a trick to upscale the texture without filtering
         var canvas2 = document.createElement('canvas');
-        canvas2.width = 512;
-        canvas2.height = 1024;
+        canvas2.width = 1920;
+        canvas2.height = 1080;
         var context = canvas2.getContext('2d');
         
         // disable smoothing
@@ -126,8 +126,8 @@ function buildCity() {
 
 var updateFcts = [];
 var scene = new THREE.Scene(),
-    mist = 0xdd4411; //'orangered';
-scene.fog = new THREE.FogExp2(mist/*0xd0e0f0*/, 0.003);
+    mist = 0xe4e4e4; //'orangered';
+scene.fog = new THREE.FogExp2(mist/*0xd0e0f0*/, 0.004);
 
 var renderer = new THREE.WebGLRenderer({
     antialias: false
@@ -142,13 +142,13 @@ renderer.setClearColor(mist/*0xd8e7ff*/);
 //		comment								//
 //////////////////////////////////////////////////////////////////////////////////
 
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, _size);
+var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, _size);
 camera.position.y = 150;
 
 //////////////////////////////////////////////////////////////////////////////////
 //		add an object and make it move					//
 //////////////////////////////////////////////////////////////////////////////////		
-var light = new THREE.HemisphereLight(0xfffff0, 0x101020, 1.25);
+var light = new THREE.HemisphereLight(0xffffff, 0x000000, 1.25);
 light.position.set(0.75, 1, 0.25);
 scene.add(light);
 
@@ -171,12 +171,12 @@ scene.add(city)
 //		Camera Controls							//
 //////////////////////////////////////////////////////////////////////////////////
 var controls = new THREE.FirstPersonControls(camera, renderer.domElement);
-controls.movementSpeed = 20;
-controls.lookSpeed = 0.05;
+controls.movementSpeed = 60;
+controls.lookSpeed = 0.02;
 controls.lookVertical = true;
 //http://stackoverflow.com/questions/14638135/firstpersoncontrols-start-by-looking-at-an-object
 controls.lon = 45;
-controls.lat = -25;
+controls.lat = -45;
 
 updateFcts.push(function(delta, now) {
     controls.update(delta);

@@ -47,7 +47,7 @@ WhiteBall.prototype.hitForward = function (strength) {
 };
 
 /** Resets the position to this.defaultPosition */
-WhiteBall.prototype.onEnterHole = function () {
+WhiteBall.prototype.onEnterHole = function (eightballgame) {
     this.rigidBody.velocity = new CANNON.Vec3(0);
     this.rigidBody.angularVelocity = new CANNON.Vec3(0);
     this.rigidBody.position.copy(this.defaultPosition);

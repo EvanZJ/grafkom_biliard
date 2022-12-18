@@ -84,8 +84,5 @@ export default class Ball {
         sphere.receiveShadow = true;
 
         return sphere;
-    }
-
-
-    
+    }    
 }

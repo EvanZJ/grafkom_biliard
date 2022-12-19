@@ -124,11 +124,43 @@ function buildCity() {
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+// snow  //
+//////////////////////////////////////////////////////////////////////////////////
+const snowGeo = new THREE.Geometry();
+const velocities = []
+for(let i=0;i<10000;i++) {
+    const snowDrop = new THREE.Vector3(
+        Math.random() * _size - _size/2,
+        Math.random() * 500 - 250,
+        Math.random() * _size - _size/2
+    );
+    snowGeo.vertices.push(snowDrop)
+}
+
+for (let i = 0; i < 10000; i++) {
+    const x = Math.floor(Math.random() * 6 - 3) * 0.1;
+    const y = Math.floor(Math.random() * 6 + 3) * - 0.05;
+    const z = Math.floor(Math.random() * 6 - 3) * 0.1;
+    const particle = new THREE.Vector3(x, y, z);
+    velocities.push(particle);
+}
+const snowMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 2,
+    transparent: true,
+
+});
+const snow = new THREE.Points(snowGeo,snowMaterial);
+snow.geometry.velocities = velocities
+
+
+
 var updateFcts = [];
 var scene = new THREE.Scene(),
     mist = 0xe4e4e4; //'orangered';
 scene.fog = new THREE.FogExp2(mist/*0xd0e0f0*/, 0.004);
-
+// createsnow()
 var renderer = new THREE.WebGLRenderer({
     antialias: false
 });
@@ -151,6 +183,8 @@ camera.position.y = 150;
 var light = new THREE.HemisphereLight(0xffffff, 0x000000, 1.25);
 light.position.set(0.75, 1, 0.25);
 scene.add(light);
+
+scene.add(snow);
 
 var material = new THREE.MeshBasicMaterial({
     color: 0x101018
@@ -194,6 +228,28 @@ updateFcts.push(function() {
 //////////////////////////////////////////////////////////////////////////////////
 var lastTimeMsec = null
 requestAnimationFrame(function animate(nowMsec) {
+
+    const posArr = snow.geometry.vertices;
+    const velArr = snow.geometry.velocities;
+
+    posArr.forEach((vertex, i) => {
+        const velocity = velArr[i];
+        
+        const velX = Math.sin(nowMsec * 0.001 * velocity.x) * 0.1;
+        const velZ = Math.cos(nowMsec * 0.0015 * velocity.z) * 0.1;
+        
+        vertex.x += velX;
+        vertex.y += velocity.y;
+        vertex.z += velZ;
+
+        if (vertex.y < -200 ) {
+            vertex.y = 200;
+        }
+
+    })
+
+    snowGeo.verticesNeedUpdate = true;
+    snow.rotation.y +=0.002;
     // keep looping
     requestAnimationFrame(animate);
     // measure time

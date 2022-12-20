@@ -261,7 +261,7 @@ requestAnimationFrame(function animate(nowMsec) {
         vertex.z += velZ;
 
         if (vertex.y < -200 ) {
-            vertex.y = 200;
+            vertex.y = 500;
         }
 
     })

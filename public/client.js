@@ -2,9 +2,13 @@ var _size = 2000; //2000;
 
 function buildCity() {
     // build the base geometry for each building
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var weight = Math.random() * 0.1 + 0.9;
+    var height = Math.random() * 0.1 + 0.9;
+    var depth = Math.random() * 0.1 + 0.9;
+    var geometry = new THREE.BoxGeometry(weight, height, depth);
     // translate the geometry to place the pivot point at the bottom instead of the center
     geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0.5, 0));
+    // var material = new THREE.MeshBasicMaterial({ color : 0xffffff});
 
     var uv = geometry.faceVertexUvs[0];
     //console.log(uv);
@@ -30,7 +34,7 @@ function buildCity() {
     var shadow = new THREE.Color(0x000000);
 
     var cityGeometry = new THREE.Geometry();
-    for (var i = (_size*_size/200); i--; ) {
+    for (var i = (_size*_size/250); i--; ) {
         // put a random position
         buildingMesh.position.x = Math.floor(Math.random()*_size - _size/2);
         buildingMesh.position.z = Math.floor(Math.random()*_size - _size/2);
@@ -78,9 +82,18 @@ function buildCity() {
     texture.needsUpdate = true;
 
     // build the mesh
-    var material = new THREE.MeshLambertMaterial({
+    // var material = new THREE.MeshPhongMaterial({
+    //     map: texture,
+    //     vertexColors: THREE.VertexColors
+    // });
+    var material = new THREE.MeshStandardMaterial({
         map: texture,
-        vertexColors: THREE.VertexColors
+        vertexColors: THREE.VertexColors,
+        roughness: 0,
+        roughnessmap: texture,
+        metalness: 0.1,
+        metalnessmap: texture,
+        clearCoat: 1,
     });
     var cityMesh = new THREE.Mesh(cityGeometry, material);
     return cityMesh;
@@ -129,7 +142,7 @@ function buildCity() {
 //////////////////////////////////////////////////////////////////////////////////
 const snowGeo = new THREE.Geometry();
 const velocities = []
-for(let i=0;i<10000;i++) {
+for(let i=0;i<5000;i++) {
     const snowDrop = new THREE.Vector3(
         Math.random() * _size - _size/2,
         Math.random() * 500 - 250,
@@ -138,7 +151,7 @@ for(let i=0;i<10000;i++) {
     snowGeo.vertices.push(snowDrop)
 }
 
-for (let i = 0; i < 10000; i++) {
+for (let i = 0; i < 5000; i++) {
     const x = Math.floor(Math.random() * 6 - 3) * 0.1;
     const y = Math.floor(Math.random() * 6 + 3) * - 0.05;
     const z = Math.floor(Math.random() * 6 - 3) * 0.1;
@@ -149,7 +162,8 @@ const snowMaterial = new THREE.PointsMaterial({
     color: 0xffffff,
     size: 2,
     transparent: true,
-
+    opacity: 0.8,
+    blending: THREE.AdditiveBlending,
 });
 const snow = new THREE.Points(snowGeo,snowMaterial);
 snow.geometry.velocities = velocities
@@ -159,12 +173,12 @@ snow.geometry.velocities = velocities
 var updateFcts = [];
 var scene = new THREE.Scene(),
     mist = 0xe4e4e4; //'orangered';
-scene.fog = new THREE.FogExp2(mist/*0xd0e0f0*/, 0.004);
+scene.fog = new THREE.FogExp2(mist/*0xd0e0f0*/, 0.002);
 // createsnow()
 var renderer = new THREE.WebGLRenderer({
     antialias: false
 });
-renderer.setSize(window.innerWidth-10, window.innerHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 //https://github.com/mrdoob/three.js/issues/4512
@@ -180,13 +194,17 @@ camera.position.y = 150;
 //////////////////////////////////////////////////////////////////////////////////
 //		add an object and make it move					//
 //////////////////////////////////////////////////////////////////////////////////		
-var light = new THREE.HemisphereLight(0xffffff, 0x000000, 1.25);
+var light = new THREE.HemisphereLight(0xffffff, 0x000000, 1);
+var light2 = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(0.75, 1, 0.25);
+light2.position.set(0.75, 1, 0.25);
+light2.castShadow = true;
 scene.add(light);
+scene.add(light2);
 
 scene.add(snow);
 
-var material = new THREE.MeshBasicMaterial({
+var material = new THREE.MeshPhysicalMaterial({
     color: 0x101018
 })
 var geometry = new THREE.PlaneBufferGeometry(_size, _size)
